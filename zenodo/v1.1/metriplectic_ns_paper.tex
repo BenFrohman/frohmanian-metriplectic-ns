@@ -1,0 +1,253 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{newunicodechar}
+\newunicodechar{ℝ}{\ensuremath{\mathbb{R}}}
+\newunicodechar{∀}{\ensuremath{\forall}}
+\newunicodechar{≥}{\ensuremath{\geq}}
+
+\geometry{margin=1in}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\title{\textbf{Metriplectic Completion of the Frohmanian Symplectic Tether:\\
+Thermodynamic Structure and Lean Formalization for the Navier--Stokes Equations}}
+\author{Benjamin Stanley Frohman\thanks{\textcopyright\ 2026 Benjamin Stanley Frohman. Distributed under the Apache License 2.0. Part of the Frohmanian Symplectic Tether program.}\\
+Independent Researcher, Texas, United States\\
+ORCID: \href{https://orcid.org/0009-0006-7068-3718}{0009-0006-7068-3718}\\
+\href{mailto:frohmanbenjamin@gmail.com}{frohmanbenjamin@gmail.com}}
+\date{Version 1.1, 10 November 2026}
+
+\sloppy
+\emergencystretch=3em
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We construct a metriplectic completion of the Frohmanian Symplectic Tether on the coadjoint orbits of the volume-preserving diffeomorphism group \(\mathrm{SDiff}(\mathbb{T}^3)\). Building on Arnold's Lie--Poisson structure for ideal incompressible fluids and the modern metriplectic 4-bracket formalism of Morrison and collaborators for dissipative continuum systems, we introduce a dissipative metric bracket that restores full thermodynamic consistency (energy conservation together with nonnegative entropy production) while addressing the obstruction, already formalized in Lean~4, that a purely symmetric tether kernel yields a vanishing damping coefficient. In Lean~4 we formalize only the abstract algebraic structure of a metriplectic system (as a structure whose axioms are fields) and prove three algebraic identities about it: energy conservation \(\dot H=0\), entropy production \(\dot S=(S,S)\ge0\), and the symmetric-swap form of the damping obstruction. The checked module \texttt{MetriplecticNS\_checked.lean} compiles with no \texttt{sorry} and its theorems depend only on Lean's standard axioms (\texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}). The Navier--Stokes part of the Lean file is a placeholder (state type \texttt{Unit}, both brackets identically zero): Lean does \emph{not} prove, and this paper does not claim to prove, recovery of the Navier--Stokes or Navier--Stokes--Fourier equations; that recovery is cited background from the metriplectic literature. Energy degeneracy of the viscous bracket is an explicit assumption, and the simple viscous bracket written in Section~5 does not satisfy it. This is not a solution of the Clay Millennium problem; implications for conditional regularity are discussed only qualitatively.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+The Euler equations of ideal incompressible hydrodynamics possess a rich geometric structure: they are the geodesic equations on the infinite-dimensional Lie group of volume-preserving diffeomorphisms equipped with the \(L^2\) metric (Arnold, 1966). In the Hamiltonian formulation this is realized as Lie--Poisson dynamics on the dual of the Lie algebra of divergence-free vector fields. The addition of viscosity produces the Navier--Stokes equations, which are dissipative. A systematic way to incorporate dissipation while preserving the Hamiltonian skeleton and guaranteeing thermodynamic consistency (the first and second laws) is the metriplectic formalism.
+
+A metriplectic system consists of a Poisson bivector (or Poisson bracket) generating the reversible dynamics and a symmetric positive-semidefinite metric tensor (or metric bracket) generating the irreversible dynamics. The modern 4-bracket formulation of Morrison and Updike unifies earlier binary-bracket approaches and provides an algorithmic construction of thermodynamically consistent models, including the Navier--Stokes--Fourier system and various multiphase extensions.
+
+Independently, the Frohmanian Symplectic Tether has been introduced as a symmetric quadratic metric correction to the Arnold Lie--Poisson bracket on \(\mathrm{SDiff}(\mathbb{T}^3)\). While the tether satisfies several desirable geometric conditions (including controllable negative feedback at vorticity maxima), a kernel-checked theorem establishes a conditional obstruction: \emph{if} the kernel is symmetric and satisfies the degeneracy condition with respect to the kinetic-energy Hamiltonian (condition (C2), which is a hypothesis and is not proved for the tether), the damping coefficient vanishes identically. Consequently the pure geometric layer cannot by itself supply a positive dissipation rate.
+
+The present work proposes adjoining an independent dissipative metric bracket to the tether, states the conditions such a bracket must satisfy, and formalizes in Lean~4 the abstract algebraic consequences of those conditions. The recovery of the classical viscous terms (or their Fourier-law counterparts) from a metriplectic bracket is known from the literature cited in Section~3; it is not reproved or formalized here.
+
+\section{Arnold Lie--Poisson Structure for Ideal Fluids}
+Let \(\mathfrak{g} = \mathfrak{X}_{\mathrm{div}}(\mathbb{T}^3)\) be the Lie algebra of smooth divergence-free vector fields on the three-torus. Its dual \(\mathfrak{g}^*\) may be identified with the space of vorticity fields via the \(L^2\) pairing. The Lie--Poisson bracket of two functionals \(F,G\) of the vorticity \(\omega\) is
+\begin{equation}
+\{F,G\}(\omega) = \int_{\mathbb{T}^3} \omega \cdot \Bigl(
+\frac{\delta F}{\delta\omega}\times\frac{\delta G}{\delta\omega}\Bigr)\,dx.
+\end{equation}
+The kinetic-energy Hamiltonian
+\begin{equation}
+H(\omega) = \frac12\int_{\mathbb{T}^3}|u|^2\,dx,\qquad
+u = \mathrm{curl}^{-1}\omega
+\end{equation}
+(the Biot--Savart operator) generates the Euler equations
+\begin{equation}
+\partial_t\omega + \mathcal{L}_u\omega = 0.
+\end{equation}
+The total helicity and the Casimir functionals associated with the coadjoint orbits are conserved.
+
+\section{Metriplectic Structure of Dissipative Fluids}
+A metriplectic system on a phase space with coordinates \(\xi\) is defined by a skew-symmetric Poisson bracket \(\{\,\cdot\,,\,\cdot\,\}\) and a symmetric metric bracket \((\,\cdot\,,\,\cdot\,)\) satisfying, for all functionals \(F,G\),
+\begin{align}
+\{F,G\} &= -\{G,F\},\qquad (F,G)=(G,F) && \text{(skew-symmetry, symmetry)},\\
+\{F,S\} &= 0 && \text{(entropy is a Casimir)},\\
+(F,H) &= 0 && \text{(energy degeneracy)},\\
+(F,F) &\ge 0 && \text{(positive semidefiniteness)}.
+\end{align}
+In particular the entropy production is \((S,S)\ge 0\). (Version~1.0 wrote ``\((S,H)\ge0\)''; that was an error, since \((S,H)=(H,S)=0\) by energy degeneracy and symmetry.)
+The evolution of an arbitrary observable is
+\begin{equation}
+\dot F = \{F,H\} + (F,S).
+\end{equation}
+In the 4-bracket formulation the metric bracket is recovered by contraction of a 4-linear form \((F,K;G,N)\) against the generators \(H\) and \(S\).
+
+For the compressible Navier--Stokes--Fourier system the dynamical variables are mass density \(\rho\), momentum density \(m=\rho u\) and entropy density \(\sigma=\rho s\). The Hamiltonian is the total energy
+\begin{equation}
+H[\rho,m,\sigma] = \int\Bigl(\frac{|m|^2}{2\rho}+\rho\,U\bigl(\rho,\tfrac{\sigma}{\rho}\bigr)\Bigr)\,dx,
+\end{equation}
+the entropy is the Casimir \(S=\int\sigma\,dx\), and the Poisson bracket is the standard non-canonical fluid bracket. The metriplectic 4-bracket is constructed from the Kulkarni--Nomizu product of two positive-semidefinite operators that encode viscosity \(\mu\) and thermal conductivity \(\kappa\). In those works \cite{MorrisonUpdike2024,BarhamMorrisonZaidni2024} contraction recovers the viscous stress and Fourier heat flux, and the algebraic symmetries guarantee
+\begin{equation}
+\dot H=0,\qquad\dot S=\int\frac{\mu}{T}|\nabla u|^2+\frac{\kappa}{T^2}|\nabla T|^2\,dx\ge0.
+\end{equation}
+
+An analogous construction is available for the incompressible case, in which the metric bracket produces the term \(\nu\Delta\omega\) (or \(\nu\Delta u\)); the energy lost by the fluid is then carried by an internal-energy or entropy variable, so that the \emph{total} energy is conserved. All of this paragraph and the preceding one is cited background; none of it is formalized in this work.
+
+\section{The Frohmanian Tether and the Damping Obstruction}
+The Frohmanian tether kernel \(T\) is a symmetric bilinear form on functionals of the vorticity,
+\begin{equation}
+T(F,G)(\omega) = -\kappa\,\|\omega\|_{L^2}^2\int_{\mathbb{T}^3}
+\bigl(\Pi_u\tfrac{\delta F}{\delta\omega}\bigr)\cdot
+\bigl(\Pi_u\tfrac{\delta G}{\delta\omega}\bigr)\,dx,\qquad \kappa>0,
+\end{equation}
+where \(\|\omega\|_{L^2}^2=\int|\omega|^2\,dx\) is the global enstrophy (this is the form formalized in the companion Lean development; version~1.0 wrote a pointwise weight \(|\omega(x)|^2\) inside the integral, which is a different kernel) and \(\Pi_u\) is the \(L^2\)-orthogonal projector onto the complement of the velocity field recovered from \(\omega\). Because of the factor \(-\kappa<0\), the kernel is negative semidefinite: \(T(F,F)\le0\) for every \(F\). It therefore has the opposite sign to a metric bracket, which must satisfy \((F,F)\ge0\). The three tether conditions are:
+\begin{enumerate}[label=(C\arabic*)]
+\item coadjoint invariance (under suitable hypotheses; not proved for \(T\) in general),
+\item degeneracy with respect to the kinetic-energy Hamiltonian, \(T(F,H)=0\) for all \(F\) (a hypothesis; \textbf{not proved} for \(T\)),
+\item controllable negative feedback, \(T(F,F)=-\kappa\|\omega\|^2\int|\Pi_u\delta F/\delta\omega|^2\,dx\le0\).
+\end{enumerate}
+The Lean~4 formalization verifies the following conditional statement: for any symmetric kernel obeying (C2), that is \(T(M,H)=0\) for every \(M\), one also has
+\begin{equation}
+T(H,M)=0\qquad\text{for every functional }M.
+\end{equation}
+(Version~1.0 described \(T(M,H)=0\) as the verified conclusion; it is in fact the hypothesis (C2).) Consequently, \emph{if} (C2) holds, the pure tether supplies no net damping rate along the energy direction, and the geometric layer alone cannot close a regularity argument that requires a positive dissipative coefficient.
+
+\section{Metriplectic Tether Completion}
+We complete the structure by adjoining an independent dissipative metric bracket \(B_{\mathrm{visc}}\) that encodes the physical viscosity (and, when desired, thermal conductivity). The full metriplectic bracket is
+\begin{equation}
+(F,G)_{\mathrm{full}} = T(F,G) + B_{\mathrm{visc}}(F,G).
+\end{equation}
+For this to be a metriplectic bracket we need the following, which we state as \textbf{assumptions} (they are not proved here):
+\begin{enumerate}[label=(A\arabic*)]
+\item \(T(F,H)=0\) for all \(F\), i.e.\ (C2) for the tether;
+\item \(B_{\mathrm{visc}}\) is symmetric and \(B_{\mathrm{visc}}(F,H)=0\) for all \(F\) (energy degeneracy of the viscous bracket);
+\item \(B_{\mathrm{visc}}(F,F)\ge -T(F,F)\) for all \(F\), so that \((F,F)_{\mathrm{full}}\ge0\).
+\end{enumerate}
+Under (A1)--(A3), energy is conserved and the entropy production is
+\begin{equation}
+\dot S = (S,S)_{\mathrm{full}} = B_{\mathrm{visc}}(S,S) + T(S,S) \;\le\; B_{\mathrm{visc}}(S,S),
+\end{equation}
+which is \(\ge0\) by (A3). The tether can only lower the entropy production supplied by \(B_{\mathrm{visc}}\). (Version~1.0 wrote \(\dot S=B_{\mathrm{visc}}(S,H)\ge0\); by (A2) that quantity is \(0\), and the correct expression is the one above.)
+
+A natural candidate in the incompressible setting is
+\begin{equation}
+B_{\mathrm{visc}}(F,G) = \nu\int_{\mathbb{T}^3}
+\nabla\Bigl(\tfrac{\delta F}{\delta\omega}\Bigr):\nabla\Bigl(\tfrac{\delta G}{\delta\omega}\Bigr)\,dx .
+\end{equation}
+It is symmetric and positive semidefinite, but it does \emph{not} satisfy (A2) on functionals of \(\omega\) alone. Indeed \(\delta H/\delta\omega=\psi\), the divergence-free, mean-zero stream function with \(-\Delta\psi=\omega\), and
+\[
+B_{\mathrm{visc}}(H,H)=\nu\int_{\mathbb{T}^3}|\nabla\psi|^2\,dx>0\qquad\text{whenever }\omega\neq0 .
+\]
+So with this candidate the fluid's kinetic energy is not conserved, which is the physically correct behaviour of viscous flow, but it means the candidate is not an energy-degenerate metric bracket. A bracket satisfying (A2) requires an additional internal-energy or entropy variable that absorbs the dissipated energy, as in the constructions cited in Section~3. That construction is not carried out here. Whether (A1) holds is open.
+
+If (A1)--(A3) hold, the resulting system is thermodynamically consistent and retains the geometric tether for possible use in conditional regularity arguments. That such a system reproduces the Navier--Stokes equations is not shown here.
+
+\section{Thermodynamic Consistency Theorems}
+\begin{theorem}[Energy conservation]
+\label{thm:energy}
+Let \(\dot F = \{F,H\} + (F,S)\). Then
+\[
+\dot H = \{H,H\} + (H,S) = 0,
+\]
+where \(\{H,H\}=0\) by skew-symmetry of the Poisson bracket and \((H,S)=0\) by the null-vector condition on the metric bracket (together with symmetry).
+\end{theorem}
+
+\begin{theorem}[Entropy production]
+\label{thm:entropy}
+\[
+\dot S = \{S,H\} + (S,S) = (S,S) \ge 0,
+\]
+since \(\{S,H\}=-\{H,S\}=0\) by skew-symmetry and the Casimir property of \(S\) (applied with \(F=H\)), and the metric bracket is positive semi-definite.
+\end{theorem}
+
+\begin{theorem}[Damping obstruction for symmetric kernels]
+\label{thm:obstruction}
+Any symmetric bilinear form \(B\) that is degenerate on the Hamiltonian (\(B(F,H)=0\) for all \(F\)) necessarily satisfies \(B(H,F)=0\) for all \(F\). Consequently, if a purely symmetric tether kernel obeys condition (C2), it supplies a vanishing damping coefficient along the Euler vector field.
+\end{theorem}
+
+\begin{remark}[Recovery of Navier--Stokes--Fourier: cited, not proved here]
+\label{thm:recovery}
+According to the cited literature, under the standard choices of Hamiltonian, entropy, non-canonical Poisson bracket and the metriplectic 4-bracket constructed from the viscosity and conductivity operators (Morrison--Updike, Barham--Morrison--Zaidni), the evolution law recovers the compressible Navier--Stokes--Fourier equations in weak form, including the precise entropy-production identity
+\[
+\dot S = \int\frac{\mu}{T}|\nabla u|^2 + \frac{\kappa}{T^2}|\nabla T|^2\,dx \ge 0.
+\]
+We do not prove this statement, and it is not formalized in Lean.
+\end{remark}
+
+The proofs of Theorems~\ref{thm:energy}--\ref{thm:obstruction} are purely algebraic and are formalized in the accompanying Lean module (\texttt{MetriplecticNS\_checked.lean}). Remark~\ref{thm:recovery} is background from the literature, not a result of this paper.
+
+\section{Lean~4 Formalization}
+The abstract algebraic structure is encoded as a Lean structure (with \texttt{Functional State := State → ℝ})
+\begin{verbatim}
+structure MetriplecticSystem (State : Type u) where
+  poisson : Functional State → Functional State → Functional State
+  metric  : Functional State → Functional State → Functional State
+  H : Functional State
+  S : Functional State
+  poisson_skew : ∀ F G, poisson F G = fun s => - (poisson G F s)
+  metric_sym   : ∀ F G, metric F G = metric G F
+  metric_pos   : ∀ F s, metric F F s ≥ 0
+  casimir_S    : ∀ F s, poisson F S s = 0
+  null_H       : ∀ F s, metric F H s = 0
+\end{verbatim}
+\noindent\textbf{What Lean proves.} The checked module \texttt{MetriplecticNS\_checked.lean} proves \texttt{energy\_conserved} (\(\dot H=0\)), \texttt{entropy\_production} (\(\dot S\ge0\)) and \texttt{tether\_damping\_obstruction} (Theorem~\ref{thm:obstruction}). It compiles with Lean \texttt{v4.30.0-rc1} and Mathlib \texttt{v4.30.0-rc1} with no errors and no \texttt{sorry}, and \texttt{\#print axioms} reports only \texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound} for all three theorems. The original module \texttt{MetriplecticNS.lean} is included unchanged for provenance; it does not compile (the entropy proof cited the Casimir condition at \(F=S\), giving \(\{S,S\}=0\) instead of the needed \(\{S,H\}=0\), and two doc comments were misplaced). The checked module changes only those proof steps and comments, not the statements.
+
+\noindent\textbf{What Lean does not prove.} The Navier--Stokes section of the Lean file is a placeholder: the state type is \texttt{Unit} and both brackets are identically zero. No integral functionals, functional derivatives, Sobolev spaces, integration by parts, viscous term, 4-bracket or recovery of the Navier--Stokes or Navier--Stokes--Fourier equations is formalized. (Version~1.0 said the specialization to fluid fields and the recovery of the viscous term by integration by parts were formalized; that was not true.) Likewise, inserting the tether kernel as a summand of the metric bracket appears in the Lean file only as a comment. The obstruction theorem by itself says nothing about \(T(S,S)\); the statement about entropy production in a split bracket is the inequality of Section~5, under assumptions (A1)--(A3).
+
+\section{Conclusion and Open Problems}
+The metriplectic completion supplies the thermodynamically consistent dissipative structure that was missing from the pure geometric tether. Because of the obstruction already proved for any symmetric kernel satisfying the kinetic-energy degeneracy, the tether itself cannot furnish the analytic dissipation rate required for a regularity proof. The rate must come from the classical viscous bracket (or from a carefully constructed higher-order geometric correction that evades the obstruction). 
+
+Open questions include:
+\begin{itemize}
+\item construction of a non-symmetric or higher-order geometric correction that yields a positive rate while preserving coadjoint equivariance;
+\item proof or refutation of (C2) for the tether kernel, and construction of an energy-degenerate viscous bracket satisfying (A2) and (A3);
+\item extension of the Lean formalization from the abstract setting to functionals on three-dimensional Sobolev spaces, including recovery of the Navier--Stokes equations;
+\item quantitative comparison of the metriplectic discretizations (structure-preserving schemes) with the conditional majorant techniques already developed for the tether.
+\end{itemize}
+The present work provides the algebraic and formal scaffolding on which those investigations can proceed. Nothing here proves global regularity of the three-dimensional Navier--Stokes equations, and this is not a solution of the Clay Millennium problem.
+
+\section*{Changes from version 1.0}
+\begin{itemize}
+\item Abstract, Introduction and Section~7: removed the claim that Lean proves recovery of the continuum equations; stated exactly what \texttt{MetriplecticNS\_checked.lean} proves and that the Navier--Stokes part of the Lean file is a placeholder.
+\item Section~3: the entropy-production condition \((S,H)\ge0\) is corrected to \((S,S)\ge0\) (from \((F,F)\ge0\)); skew-symmetry and symmetry are stated.
+\item Section~4: the tether formula uses the global enstrophy factor as formalized; the sign \(-\kappa\) makes \(T\) negative semidefinite, which is stated; (C2) is marked as a hypothesis that is not proved, and the Lean result is stated correctly as \(T(H,M)=0\) assuming (C2).
+\item Section~5: \(\dot S=B_{\mathrm{visc}}(S,H)\) corrected to \(\dot S=(S,S)_{\mathrm{full}}\); energy degeneracy of \(B_{\mathrm{visc}}\) stated as an assumption, with a proof that the displayed candidate does not satisfy it; the ``recovers Navier--Stokes'' claim removed.
+\item Section~6: the recovery theorem is now a remark citing the literature.
+\item The Lean status, toolchain and axiom output are recorded; copyright, ORCID, affiliation and program note added.
+\end{itemize}
+
+\begin{thebibliography}{9}
+\bibitem{Arnold1966}
+V.~I. Arnold.
+\newblock Sur la géométrie différentielle des groupes de Lie de dimension infinie et ses applications à l'hydrodynamique des fluides parfaits.
+\newblock \emph{Ann. Inst. Fourier} \textbf{16} (1966), 319--361.
+
+\bibitem{Morrison1986}
+P.~J. Morrison.
+\newblock A paradigm for joined Hamiltonian and dissipative systems.
+\newblock \emph{Physica D} \textbf{18} (1986), 410--419.
+
+\bibitem{Materassi2014}
+M. Materassi.
+\newblock Metriplectic algebra for dissipative fluids in Lagrangian formulation.
+\newblock arXiv:1409.6542, 2014.
+
+\bibitem{MorrisonUpdike2024}
+P.~J. Morrison and M.~H. Updike.
+\newblock Inclusive curvature-like framework for describing dissipation: metriplectic 4-bracket dynamics.
+\newblock \emph{Phys. Rev. E} \textbf{109} (2024), 045202.
+
+\bibitem{ZaidniMorrisonBenjelloun2024}
+A. Zaidni, P.~J. Morrison and S. Benjelloun.
+\newblock Thermodynamically consistent Cahn--Hilliard--Navier--Stokes equations using the metriplectic dynamics formalism.
+\newblock arXiv:2402.11116, 2024.
+
+\bibitem{BarhamMorrisonZaidni2024}
+W. Barham, P.~J. Morrison and A. Zaidni.
+\newblock A thermodynamically consistent discretization of 1D thermal-fluid models using their metriplectic 4-bracket structure.
+\newblock arXiv:2410.11045, 2024.
+
+\bibitem{Frohman2026}
+B.~S. Frohman.
+\newblock The Frohmanian Tether on \(\mathrm{SDiff}(\mathbb{T}^3)\): a metriplectic correction, its canonicity, and an obstruction to damping.
+\newblock Zenodo, 2026. DOI: 10.5281/zenodo.24120781.
+\end{thebibliography}
+
+\end{document}

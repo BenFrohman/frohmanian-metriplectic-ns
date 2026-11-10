@@ -141,6 +141,17 @@ command and source commit, and says plainly what is not formalized (replaces the
   artifact.
 - Lean source commit referenced by paper v1.0: `1ecea6cf99011cd4b962e68ea05a1a03a90e3eb3`.
 
+## Zenodo deposit (paper v1.1)
+
+The Zenodo record *Metriplectic Completion of the Frohmanian Symplectic Tether* (concept DOI
+[10.5281/zenodo.24121040](https://doi.org/10.5281/zenodo.24121040)) carries the shorter companion
+paper and the single-file Lean module. Its exact files for version 1.1 are in `zenodo/v1.1/`:
+the corrected paper (no continuum-recovery claim; `(S,S) ≥ 0`; the `−κ` sign of the tether kernel
+stated; energy degeneracy of the viscous bracket stated as an assumption and shown to fail for the
+naive candidate), the author's original `MetriplecticNS.lean` (does not compile; kept for provenance)
+and `MetriplecticNS_checked.lean` (compiles; only `propext`, `Classical.choice`, `Quot.sound`).
+Those files are not part of the Lake build; see `zenodo/v1.1/README.md` for their rebuild command.
+
 ## Related repositories
 
 - [frohmanian-tether-sdiff](https://github.com/BenFrohman/frohmanian-tether-sdiff) (imported)
