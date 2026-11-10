@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "Metriplectic Completion of the Frohmanian Symplectic Tether: Thermodynamic Structure and Lean Formalization for the Navier–Stokes Equations (abstract algebraic formalization and companion paper)"
+type: software
+authors:
+  - family-names: Frohman
+    given-names: Benjamin Stanley
+    orcid: "https://orcid.org/0009-0006-7068-3718"
+    affiliation: Independent Researcher, Texas, United States
+    email: frohmanbenjamin@gmail.com
+license: Apache-2.0
+repository-code: "https://github.com/BenFrohman/frohmanian-metriplectic-ns"
+keywords:
+  - metriplectic
+  - Navier-Stokes
+  - Frohmanian Symplectic Tether
+  - Lean 4
+  - abstract algebra
+abstract: >-
+  Companion repository for an abstract algebraic metriplectic formalization
+  in Lean 4, together with a working paper. The Lean development checks
+  energy conservation and nonnegative entropy production for an abstract
+  metriplectic system, and the purely algebraic obstruction that a
+  symmetric bracket degenerate on the Hamiltonian also vanishes when the
+  Hamiltonian is placed in the first slot. It is not a Clay Millennium
+  Problem proof. The Navier–Stokes specialization in the Lean file is a
+  placeholder. Kernel checks are not PDE or physical proofs. Recovery of
+  the continuum Navier–Stokes–Fourier equations is not formalized.

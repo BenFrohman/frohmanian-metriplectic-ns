@@ -1,0 +1,14 @@
+Metriplectic Completion of the Frohmanian Symplectic Tether
+Copyright 2026 Benjamin Stanley Frohman
+
+Code in this repository is licensed under the Apache License, Version 2.0
+(see LICENSE).
+
+The paper (LaTeX source and PDF under paper/) is licensed under the
+Creative Commons Attribution 4.0 International License (see LICENSE-paper).
+
+This repository formalizes an abstract algebraic metriplectic structure
+in Lean 4. It is not a solution of the Clay Millennium Navier–Stokes
+problem. A successful Lean kernel check is not a PDE proof or a physical
+proof. Classical results of Arnold, Morrison and collaborators are cited,
+not claimed as new.
