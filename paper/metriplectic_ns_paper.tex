@@ -18,13 +18,13 @@
 \newtheorem{remark}[theorem]{Remark}
 
 \title{\textbf{Metriplectic Completion of the Frohmanian Symplectic Tether:\\
-Algebraic Structure, a Finite-Dimensional Viscous Model,\\ and a Lean~4 Formalization}}
+An Assembled Finite-Dimensional Viscous System,\\ the Imported Tether Kernel, and Lean~4 Checks}}
 % Author: Benjamin Stanley Frohman
 \author{Benjamin Stanley Frohman\\
 Independent Researcher, Texas, United States\\
 ORCID: 0009-0006-7068-3718\\
 \texttt{frohmanbenjamin@gmail.com}}
-\date{Version 0.2 (working paper), November 2026}
+\date{Version 1.0, November 2026}
 
 \sloppy
 \emergencystretch=3em
@@ -32,24 +32,23 @@ ORCID: 0009-0006-7068-3718\\
 \maketitle
 
 \begin{abstract}
-We study how the Frohmanian tether kernel, a symmetric quadratic correction to the Arnold
-Lie--Poisson bracket on divergence-free vorticity fields on \(\mathbb{T}^3\), fits into the
-metriplectic formalism of Morrison and collaborators. We prove, and check in Lean~4, three facts.
-(i) For an abstract metriplectic system, energy is conserved and entropy production equals
-\((S,S)\ge 0\). (ii) Stated against the tether development itself (imported as a pinned Lean
-dependency, not re-proved), the metric bracket of any metriplectic system on the tether's state
-space whose energy is the tether's kinetic-energy Hamiltonian vanishes with that Hamiltonian in
-either slot; if the tether kernel is a summand of such a metric bracket next to a degenerate
-viscous summand, the tether kernel itself vanishes against the Hamiltonian in both slots; and,
-because the tether kernel is negative semidefinite on the diagonal, it cannot be the whole metric
-bracket of a metriplectic system without having zero diagonal and producing no entropy.
-(iii) We construct a concrete finite-dimensional metriplectic system with viscous dissipation
-(velocity coefficients \(u\in\mathbb{R}^n\) and an entropy coordinate), prove all structure axioms,
-compute its equations of motion \(\dot u_i=(J(u)u)_i-\nu_iu_i\), \(\dot s=\sum_i\nu_iu_i^2\), and give
-a three-mode triad instance with explicit non-vacuity checks. The finite-dimensional model is not
-derived from a Fourier truncation of the Navier--Stokes equations, and nothing here recovers or
-formalizes the continuum Navier--Stokes or Navier--Stokes--Fourier equations. This is not a
-solution of the Clay Millennium problem; a kernel check is not a geometric or physical proof.
+We assemble a concrete metriplectic system with viscous dissipation and test the Frohmanian tether
+kernel against the metriplectic axioms, with every result checked by the Lean~4 kernel. The system
+lives on \(\mathbb{R}^n\times\mathbb{R}\) (velocity coefficients \(u\) and an entropy coordinate \(s\)): a Poisson
+bracket from a state-dependent skew matrix \(J(u)\), a viscous metric bracket with viscosities
+\(\nu_i\ge0\), energy \(H=\tfrac12\|u\|^2+s\) and entropy \(S=s\). We prove all metriplectic axioms, derive the
+equations of motion \(\dot u_i=(J(u)u)_i-\nu_iu_i\), \(\dot s=\sum_i\nu_iu_i^2\), and show non-vacuity for a
+three-mode triad instance (nonzero brackets, nonconstant energy, strictly positive entropy production,
+nonzero reversible motion). The tether kernel is imported from its own Lean development at a pinned
+commit, not re-proved. Against it we prove: the metric bracket of any metriplectic system with the
+tether's kinetic-energy Hamiltonian vanishes against \(H\) in both slots; a tether summand next to a
+degenerate viscous summand is forced to satisfy the (unproved) degeneracy condition (C2); and the tether
+kernel is negative semidefinite and, by the imported nondegeneracy theorem, strictly negative
+somewhere, so \emph{no} metriplectic system has the tether kernel as its metric bracket. The assembled
+system is finite-dimensional and is not derived from a Fourier truncation of the Navier--Stokes
+equations; nothing here recovers or formalizes the continuum Navier--Stokes or Navier--Stokes--Fourier
+equations. This is not a solution of the Clay Millennium problem, and a kernel check is not a
+geometric or physical proof.
 \end{abstract}
 
 \tableofcontents
@@ -213,9 +212,21 @@ If the metric bracket of a metriplectic system on vorticity fields equals \(T\),
 \eqref{eq:pos} gives \(T(F,F)\ge0\); Lemma~\ref{lem:diag} gives \(T(F,F)\le0\). Then \(\dot S=(S,S)\) by
 Theorem~\ref{thm:entropy}, and \((S,S)=T(S,S)=0\).
 \end{proof}
-Thus a positive entropy production cannot come from the tether kernel. In a split \((\cdot,\cdot)=V+T\),
+\begin{corollary}[Non-vacuity: the tether is not a metric bracket]\label{cor:nometric}
+There are \(\omega,F\) with \(T(F,F)(\omega)<0\). Consequently no metriplectic system on vorticity fields
+has metric bracket equal to \(T\).
+\end{corollary}
+\begin{proof}
+The imported theorem \texttt{tetherKernel\_nondegenerate} gives a regular vorticity \(\omega\) (a smooth
+compactly supported rotation field) and a linear test functional \(F\) with \(T(F,F)(\omega)\neq0\);
+Lemma~\ref{lem:diag} gives \(T(F,F)(\omega)\le0\), hence \(<0\). If a metriplectic system had metric bracket
+\(T\), Theorem~\ref{thm:sign} would give \(T(F,F)(\omega)=0\), a contradiction.
+\end{proof}
+So Theorem~\ref{thm:sign} is not vacuous: its hypothesis is never satisfied, and that is a proved fact
+about the actual tether kernel. Thus a positive entropy production cannot come from the tether kernel. In a split \((\cdot,\cdot)=V+T\),
 \((S,S)=V(S,S)+T(S,S)\le V(S,S)\): the tether can only lower the entropy production supplied by \(V\), and
-\(V\) must dominate it for \eqref{eq:pos} to hold. These statements replace the previous version's claim
+\(V\) must dominate it for \eqref{eq:pos} to hold. Whether any metriplectic system of the split form of Theorem~\ref{thm:summand} exists with \(T\neq0\) is
+open: by that theorem, existence would prove (C2) for \(T\). These statements replace the previous version's claim
 that ``the tether kernel may be inserted as one summand of the metric bracket'' and that ``energy
 conservation continues to hold because \(T\) is already degenerate on \(H\)''; that degeneracy is not proved.
 
@@ -310,6 +321,7 @@ In general \(\{c_i,c_j\}=J(u)_{ij}\) and \((c_i,c_i)=\nu_i\) by Lemma~\ref{lem:d
 
 \section{Lean~4 formalization and reproducibility}\label{sec:lean}
 \paragraph{Modules.}
+\begingroup\raggedright
 \begin{itemize}
 \item \texttt{MetriplecticNS/Basic.lean}: \texttt{MetriplecticSystem}; \texttt{energy\_conserved},
 \texttt{entropy\_production}, \texttt{entropy\_production\_eq}, \texttt{tether\_damping\_obstruction}
@@ -317,13 +329,16 @@ In general \(\{c_i,c_j\}=J(u)_{ij}\) and \((c_i,c_i)=\nu_i\) by Lemma~\ref{lem:d
 \item \texttt{MetriplecticNS/TetherBridge.lean}: imports \texttt{FrohmanianTether.Combined};
 \texttt{metric\_degenerate}, \texttt{metric\_left\_H\_zero}, \texttt{tetherKernel\_summand\_no\_H\_coupling},
 \texttt{tetherKernel\_diag\_nonpos}, \texttt{tetherKernel\_as\_metric\_diag\_zero},
-\texttt{tetherKernel\_as\_metric\_no\_entropy\_production} (Section~\ref{sec:bridge}).
+\texttt{tetherKernel\_as\_metric\_no\_entropy\_production}, \texttt{tetherKernel\_diag\_neg\_somewhere},
+\texttt{no\_metriplectic\_system\_with\_tether\_metric} (Section~\ref{sec:bridge}); it also imports
+\texttt{FrohmanianTether.TetherNondegeneracy}.
 \item \texttt{MetriplecticNS/Galerkin.lean}: the system \texttt{system D}, the five axioms, equations of
 motion \texttt{evolution\_coord}, \texttt{evolution\_S}, \texttt{evolution\_K},
 \texttt{kinetic\_loss\_eq\_entropy\_gain}, and the triad instance with \texttt{triad\_poisson\_ne\_zero},
 \texttt{triad\_metric\_ne\_zero}, \texttt{H\_not\_const}, \texttt{triad\_entropy\_production\_pos},
 \texttt{triad\_evolution\_coord0} (Section~\ref{sec:galerkin}).
 \end{itemize}
+\endgroup
 
 \paragraph{Dependency.} The tether development is the Lake package \texttt{FrohmanianTether} from
 \url{https://github.com/BenFrohman/frohmanian-tether-sdiff}, pinned to commit
@@ -333,13 +348,20 @@ lemmas are imported rather than re-proved.
 
 \paragraph{Audit.} \texttt{scripts/kernel\_check.sh} rejects \texttt{sorry}, \texttt{admit},
 \texttt{native\_decide}, \texttt{axiom}, \texttt{opaque} and \texttt{unsafe} in the sources, and runs
-\texttt{\#print axioms} on all 73 declarations of the three modules. Each depends only on
+\texttt{\#print axioms} on all 75 declarations of the three modules. Each depends only on
 \texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound} (this output is transitive, so it covers
 the imported tether lemmas). Continuous integration runs \texttt{lake build} and the audit on every push
 and uploads the audit output.
 
+\paragraph{Errors caught by Lean checking.} Kernel checking caught real errors in the original
+upload: the draft entropy-production proof used the wrong rule (\(\{S,S\}=0\), the Casimir condition at
+\(F=S\)) where the argument needs \(\{S,H\}=0\) (Casimir condition at \(F=H\) plus skew-symmetry), and the
+Navier--Stokes ``specialization'' was a placeholder (state type \texttt{Unit}, both brackets identically
+zero) that was never assembled into a system. Both are corrected here: the proof uses the right rule,
+and the placeholder is replaced by the assembled system of Section~\ref{sec:galerkin}.
+
 \paragraph{Rebuild.} \texttt{lake exe cache get \&\& lake build \&\& ./scripts/kernel\_check.sh}.
-The exact source commit for this version is \texttt{\seqsplit{b41ff89e58d12a39edcbc5706c795a9aa322dc35}}.
+The exact source commit for this version is \texttt{\seqsplit{1ecea6cf99011cd4b962e68ea05a1a03a90e3eb3}}.
 
 \paragraph{What is not formalized.} The Arnold bracket on vorticity fields, functional derivatives on
 Sobolev spaces, any integration by parts, the viscous term \(\nu\Delta u\), the 4-bracket constructions, and
@@ -352,8 +374,9 @@ The metriplectic formalism sharpens the earlier obstruction. With the tether's o
 metriplectic metric bracket vanishes against \(H\) in both slots; a tether summand next to a degenerate
 viscous summand is forced to satisfy (C2) and then vanishes against \(H\); and the tether's diagonal has the
 wrong sign to produce entropy, so positive entropy production must come from another summand, such as a
-viscous one. A concrete finite-dimensional viscous metriplectic system shows the structure is
-consistent and non-vacuous.
+viscous one; and since the tether is strictly negative somewhere, it is not the metric bracket of any
+metriplectic system. A concrete finite-dimensional viscous metriplectic system, assembled and checked
+in Lean, shows the structure is consistent and non-vacuous.
 
 Open problems:
 \begin{itemize}

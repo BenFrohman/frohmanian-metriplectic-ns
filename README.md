@@ -37,7 +37,7 @@ and `Combined.tetherKernel_left_H_zero` directly.
 
 ## What Lean proves
 
-All 73 declarations below are audited with `#print axioms`; each depends only on `propext`,
+All 75 declarations below are audited with `#print axioms`; each depends only on `propext`,
 `Classical.choice`, `Quot.sound` (transitively, including the imported tether lemmas).
 There are 0 `sorry`, 0 `admit`, 0 `native_decide`, and no `axiom` declarations.
 
@@ -66,6 +66,12 @@ and did not compile. The proof uses `casimir_S` at `H` plus skew-symmetry, exact
 | `tetherKernel_diag_nonpos` | `TetherKernel ω F F ≤ 0` |
 | `tetherKernel_as_metric_diag_zero` | if `metric = TetherKernel`, then `TetherKernel ω F F = 0` for all `ω, F` |
 | `tetherKernel_as_metric_no_entropy_production` | if `metric = TetherKernel`, then `Ṡ = 0` |
+| `tetherKernel_diag_neg_somewhere` | `∃ ω F, TetherKernel ω F F < 0`, from the imported `TetherNondegeneracy.tetherKernel_nondegenerate` |
+| `no_metriplectic_system_with_tether_metric` | no `MetriplecticSystem CoadjointOrbit` has metric bracket `TetherKernel` |
+
+Non-vacuity on the tether side: the sign obstruction is not vacuous, because its hypothesis is
+proved never to hold for the actual kernel. Not shown: that any system of the split form in
+`tetherKernel_summand_no_H_coupling` exists with `TetherKernel ≠ 0` (that would prove C2, which is open).
 
 ### `MetriplecticNS/Galerkin.lean` (concrete system; the old `Unit`/zero-bracket placeholder is gone)
 
@@ -103,6 +109,7 @@ reversible part is nonzero).
 | `metric_left_H_zero`: `hH : sys.H = KineticEnergyHamiltonian` | Thm 6.1: `H` is the tether's kinetic-energy Hamiltonian | exact |
 | `tetherKernel_summand_no_H_coupling`: `hsplit`, `hV` | Thm 6.2: `(·,·) = V + T`, `V(F,H) = 0` | exact |
 | `tetherKernel_as_metric_*`: `hT` | Thm 6.4: metric bracket equals `T` | exact |
+| `no_metriplectic_system_with_tether_metric` (no hypotheses) | Cor. 6.5 | exact |
 | imported `FrohmanianTether.DegenerateWRTKineticEnergy` | (C2) `T(F,H) = 0 ∀F` | exact; **not proved for `TetherKernel`** |
 | imported `TetherKernel` (global `‖ω‖²` outside the integral) | Sec. 5 formula | exact (v0.1 of the paper had a pointwise `|ω(x)|²`; corrected) |
 | `Galerkin.Data.J_skew` | Sec. 7.1 `J(u)ᵀ = −J(u)` | exact |
@@ -110,11 +117,11 @@ reversible part is nonzero).
 | `fderiv` (zero where not differentiable) | Sec. 7.1 derivative convention | exact (stated in the paper) |
 
 Mismatches found and not patched over: none remaining in the current files. Earlier mismatches
-(all corrected in paper v0.2 and recorded there): the entropy condition written as `(S,H) ≥ 0`
+(all corrected in paper v1.0 and recorded there): the entropy condition written as `(S,H) ≥ 0`
 instead of `(S,S) ≥ 0`; the claim that Lean proved `T(M,H) = 0` (that is C2, a hypothesis); the
 claim that `T` is "already degenerate on `H`"; the pointwise-weight tether formula.
 
-## Paper changes in v0.2
+## Paper changes in v1.0
 
 Abstract rewritten (no continuum recovery claim); Section 3 entropy condition corrected; Section 5
 (former 4) fixes the `T(M,H) = 0` misattribution and states C1/C2 are not proved; new Section 6
@@ -122,7 +129,7 @@ derives the obstruction from the imported kernel, with the tether-summand and si
 (replaces the "insert `T` as a metric summand" claim); new Section 7 is the finite-dimensional
 system with full hand proofs; Section 8 lists the Lean modules, dependency pin, audit, rebuild
 command and source commit, and says plainly what is not formalized (replaces the integration-by-parts
-/ integral-specialization claims); the "Recovery of Navier–Stokes–Fourier" theorem is removed.
+/ integral-specialization claims); the "Recovery of Navier–Stokes–Fourier" theorem is removed; Corollary 6.5 (the tether is strictly negative somewhere, so it is not the metric bracket of any metriplectic system); a paragraph in Section 8 records the errors Lean checking caught in the original upload (the `{S,S}=0` wrong rule and the `Unit`/zero-bracket placeholder).
 
 ## Reproducibility
 
@@ -132,7 +139,7 @@ command and source commit, and says plainly what is not formalized (replaces the
 - Audit: `./scripts/kernel_check.sh` (forbidden-token scan plus `#print axioms` for every
   declaration listed in `scripts/PrintAxioms.lean`). CI uploads the output as the `axiom-audit`
   artifact.
-- Lean source commit referenced by paper v0.2: `b41ff89e58d12a39edcbc5706c795a9aa322dc35`.
+- Lean source commit referenced by paper v1.0: `1ecea6cf99011cd4b962e68ea05a1a03a90e3eb3`.
 
 ## Related repositories
 
