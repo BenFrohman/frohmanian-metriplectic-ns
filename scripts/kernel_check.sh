@@ -8,13 +8,13 @@ cd "$(dirname "$0")/.."
 
 echo "== forbidden-token scan =="
 if grep -rnE '\b(sorry|admit|native_decide|implemented_by)\b|^\s*(axiom|unsafe|opaque)\b' \
-     --include='*.lean' MetriplecticNS.lean scripts/PrintAxioms.lean \
+     --include='*.lean' MetriplecticNS.lean MetriplecticNS scripts/PrintAxioms.lean \
    | grep -v 'Zero-sorry' \
    | grep -v 'no sorry' \
    | grep -v 'standard axioms'; then
   echo "FAIL: forbidden token found"; exit 1
 fi
-echo "OK: no sorry/admit/axiom/native_decide/opaque/unsafe in MetriplecticNS.lean"
+echo "OK: no sorry/admit/axiom/native_decide/opaque/unsafe in MetriplecticNS.lean, MetriplecticNS/*.lean"
 
 echo "== #print axioms =="
 out="$(lake env lean scripts/PrintAxioms.lean 2>&1)"

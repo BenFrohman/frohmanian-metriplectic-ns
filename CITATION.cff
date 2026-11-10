@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this work, please cite it as below."
-title: "Metriplectic Completion of the Frohmanian Symplectic Tether: Thermodynamic Structure and Lean Formalization for the Navier–Stokes Equations (abstract algebraic formalization and companion paper)"
+title: "Metriplectic Completion of the Frohmanian Symplectic Tether: Thermodynamic Structure and Lean Formalization for the Navier–Stokes Equations (Lean formalization, imported tether kernel, finite-dimensional viscous model, and companion paper)"
 type: software
 authors:
   - family-names: Frohman
@@ -16,13 +16,16 @@ keywords:
   - Frohmanian Symplectic Tether
   - Lean 4
   - abstract algebra
+  - Galerkin truncation
 abstract: >-
-  Companion repository for an abstract algebraic metriplectic formalization
-  in Lean 4, together with a working paper. The Lean development checks
-  energy conservation and nonnegative entropy production for an abstract
-  metriplectic system, and the purely algebraic obstruction that a
-  symmetric bracket degenerate on the Hamiltonian also vanishes when the
-  Hamiltonian is placed in the first slot. It is not a Clay Millennium
-  Problem proof. The Navier–Stokes specialization in the Lean file is a
-  placeholder. Kernel checks are not PDE or physical proofs. Recovery of
-  the continuum Navier–Stokes–Fourier equations is not formalized.
+  Lean 4 formalization and working paper. Proves energy conservation and
+  entropy production for abstract metriplectic systems; imports the
+  Frohmanian tether kernel (frohmanian-tether-sdiff, commit 8b7bd67) and
+  derives the damping obstruction, a tether-summand obstruction and a sign
+  obstruction from it; and constructs a concrete finite-dimensional
+  metriplectic system with viscous dissipation and a 3-mode triad instance
+  with non-vacuity lemmas. Condition C2 for the tether kernel is not proved.
+  The finite-dimensional model is not derived from Navier-Stokes, and the
+  continuum Navier-Stokes(-Fourier) equations are not recovered or
+  formalized. Not a Clay Millennium Problem proof; kernel checks are not
+  PDE or physical proofs.

@@ -34,4 +34,11 @@ jobs:
           lint: false
           use-mathlib-cache: true
       - name: Forbidden tokens and #print axioms
-        run: ./scripts/kernel_check.sh
+        run: ./scripts/kernel_check.sh 2>&1 | tee axioms.txt
+        shell: bash
+      - name: Upload axiom audit output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: axiom-audit
+          path: axioms.txt
