@@ -76,3 +76,5 @@ import MetriplecticNS
 #print axioms MetriplecticNS.TetherBridge.tetherKernel_diag_nonpos
 #print axioms MetriplecticNS.TetherBridge.tetherKernel_as_metric_diag_zero
 #print axioms MetriplecticNS.TetherBridge.tetherKernel_as_metric_no_entropy_production
+#print axioms MetriplecticNS.TetherBridge.tetherKernel_diag_neg_somewhere
+#print axioms MetriplecticNS.TetherBridge.no_metriplectic_system_with_tether_metric

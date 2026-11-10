@@ -5,6 +5,7 @@ Author: Benjamin Stanley Frohman
 -/
 import MetriplecticNS.Basic
 import FrohmanianTether.Combined
+import FrohmanianTether.TetherNondegeneracy
 
 /-!
 # The metriplectic obstruction, stated against the imported Frohmanian tether kernel
@@ -19,7 +20,8 @@ Imported objects used:
 * `FrohmanianTether.TetherKernel`, `FrohmanianTether.DegenerateWRTKineticEnergy` (condition C2);
 * `FrohmanianTether.tetherKernel_comm`, `FrohmanianTether.tetherKernel_quadratic_form`,
   `FrohmanianTether.kappa_pos`;
-* `Combined.left_H_zero_of_C2_symm` and `Combined.tetherKernel_left_H_zero`.
+* `Combined.left_H_zero_of_C2_symm` and `Combined.tetherKernel_left_H_zero`;
+* `TetherNondegeneracy.tetherKernel_nondegenerate` (non-vacuity of the sign obstruction).
 
 Status of C2 for `TetherKernel` in the imported repository: **not proved** (see the module
 docstring of `FrohmanianTether.Combined`). Every statement below that concerns `TetherKernel` and
@@ -117,5 +119,25 @@ theorem tetherKernel_as_metric_no_entropy_production (sys : MetriplecticSystem C
     (ω : CoadjointOrbit) : sys.evolution sys.S ω = 0 := by
   rw [sys.entropy_production_eq, hT]
   exact tetherKernel_as_metric_diag_zero sys hT ω sys.S
+
+/-- **Non-vacuity of the sign obstruction.** The imported tether kernel is strictly negative
+somewhere on the diagonal: by the imported `TetherNondegeneracy.tetherKernel_nondegenerate` there
+are `ω, F` with `TetherKernel ω F F ≠ 0`, and `tetherKernel_diag_nonpos` gives `≤ 0`. -/
+theorem tetherKernel_diag_neg_somewhere :
+    ∃ (ω : CoadjointOrbit) (F : FrohmanianTether.Functional),
+      FrohmanianTether.TetherKernel ω F F < 0 := by
+  obtain ⟨ω, φ, _, _, hne⟩ := TetherNondegeneracy.tetherKernel_nondegenerate
+  exact ⟨ω, _, lt_of_le_of_ne (tetherKernel_diag_nonpos ω _) hne⟩
+
+/-- **The tether kernel is not the metric bracket of any metriplectic system** on vorticity
+fields. Proof: such a system would force `TetherKernel ω F F = 0` everywhere
+(`tetherKernel_as_metric_diag_zero`), contradicting `tetherKernel_diag_neg_somewhere`. -/
+theorem no_metriplectic_system_with_tether_metric :
+    ¬ ∃ sys : MetriplecticSystem CoadjointOrbit,
+      ∀ F G ω, sys.metric F G ω = FrohmanianTether.TetherKernel ω F G := by
+  rintro ⟨sys, hT⟩
+  obtain ⟨ω, F, hlt⟩ := tetherKernel_diag_neg_somewhere
+  have h0 := tetherKernel_as_metric_diag_zero sys hT ω F
+  linarith
 
 end MetriplecticNS.TetherBridge
