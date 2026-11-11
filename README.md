@@ -166,3 +166,7 @@ A prior vacuity-audit side note on related formalization pitfalls is
 
 - Code: Apache License 2.0 (`LICENSE`).
 - Paper (LaTeX and PDF): CC BY 4.0 (`LICENSE-paper`).
+
+## Copyright
+
+© 2026 Benjamin Stanley Frohman.
