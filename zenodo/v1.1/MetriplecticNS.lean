@@ -1,5 +1,17 @@
+/-
+Copyright (c) 2026 Benjamin Stanley Frohman. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Benjamin Stanley Frohman
+-/
+
 import Mathlib.Data.Real.Basic
 import Mathlib.Tactic
+
+/-!
+# zenodo.v1.1.MetriplecticNS
+
+Machine-checked Lean 4 module.
+-/
 
 universe u
 
