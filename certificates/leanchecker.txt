@@ -1,0 +1,10 @@
+checker: leanchecker source shipped with v4.30.0-rc1 (src/lean/LeanChecker.lean), prefix match -> exact match, run with lean --run
+  patch: 93c93
+  patch: <         if !fresh && target.isPrefixOf m || target == m then
+  patch: ---
+  patch: >         if !fresh && target == m || target == m then
+MetriplecticNS: OK (1 module replayed)
+MetriplecticNS.Basic: OK (1 module replayed)
+MetriplecticNS.Galerkin: OK (1 module replayed)
+MetriplecticNS.TetherBridge: OK (1 module replayed)
+RESULT: 4 of 4 modules replayed through the kernel, 0 failures
