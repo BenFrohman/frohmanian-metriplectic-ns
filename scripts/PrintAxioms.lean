@@ -1,7 +1,18 @@
--- Copyright 2026 Benjamin Stanley Frohman. Apache-2.0.
+/-
+Copyright (c) 2026 Benjamin Stanley Frohman. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Benjamin Stanley Frohman
+-/
+
 -- Kernel/axiom audit: every listed declaration must depend only on
 -- propext, Classical.choice and Quot.sound.
 import MetriplecticNS
+
+/-!
+# scripts.PrintAxioms
+
+Machine-checked Lean 4 module.
+-/
 
 #print axioms MetriplecticNS.MetriplecticSystem.evolution
 #print axioms MetriplecticNS.MetriplecticSystem.poisson_self_zero
