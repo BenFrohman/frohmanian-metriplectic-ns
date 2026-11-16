@@ -1,5 +1,9 @@
 # Metriplectic completion of the Frohmanian Symplectic Tether
 
+## Kernel certificate
+
+[certificates/CERTIFICATE.md](certificates/CERTIFICATE.md): commit `5a0a7da`, `leanprover/lean4:v4.30.0-rc1`. `lake build` passes; the sorry/axiom scan finds 0 hits; **84 theorems depend only on `propext`, `Classical.choice`, `Quot.sound`**; 4 of 4 modules replayed through the kernel, 0 failures ([CI run](https://github.com/BenFrohman/frohmanian-metriplectic-ns/actions/runs/43937963581)).
+
 Author: Benjamin Stanley Frohman
 Affiliation: Independent Researcher, Texas, United States
 ORCID: [0009-0006-7068-3718](https://orcid.org/0009-0006-7068-3718)
