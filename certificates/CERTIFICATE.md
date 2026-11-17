@@ -5,13 +5,13 @@ This file records a reproducible machine check of the Lean 4 development in this
 | Item | Value |
 |---|---|
 | Repository | https://github.com/BenFrohman/frohmanian-metriplectic-ns |
-| Certified commit | `5a0a7dab0353e672ac695235ec029c455c438345` (branch `chore/kernel-certificate`) |
-| Lean sources | identical to `main` at `0bf6b7620bf3dffa5fcd5cd18ffac89dbf0519fb`: no `.lean`, lakefile, manifest or toolchain file differs; the certified commit only adds CI and the scripts in `certificates/tools/` |
+| Certified commit | `3b40ae3d94d7ae4183fcf8b74d0a61dd40bf527c` (branch `main`) |
+| Lean sources | the certified commit is the `main` head itself; the certificate files were committed afterwards in a commit that changes no `.lean`, lakefile, manifest or toolchain file |
 | lean-toolchain | `leanprover/lean4:v4.30.0-rc1` |
 | Lean | Lean (version 4.30.0-rc1, x86_64-unknown-linux-gnu, commit 714601baf118066cbf3f282361339c6d06665b2a, Release) |
 | Mathlib | `0c154d67103f74be3a0f2c509f72ccbf5be9f2a7` (lake-manifest.json; inputRev `v4.30.0-rc1`) |
-| Date (UTC) | 2026-11-16T19:22:56Z |
-| CI run | https://github.com/BenFrohman/frohmanian-metriplectic-ns/actions/runs/43937963581 |
+| Date (UTC) | 2026-11-16T20:54:46Z |
+| CI run | https://github.com/BenFrohman/frohmanian-metriplectic-ns/actions/runs/43954576160 |
 | `lake build` | `Build completed successfully (2725 jobs).` ([build.log](build.log)) |
 | sorry / admit / native_decide / axiom scan | `RESULT: 0 hits` ([sorry-scan.txt](sorry-scan.txt)) |
 | `#print axioms` | `AUDIT PASS: 84 theorems in 3 modules depend only on propext, Classical.choice, Quot.sound (or on no axioms)` ([axioms.txt](axioms.txt)) |
@@ -31,5 +31,5 @@ The axiom result says the listed theorems are proved from Lean's standard axioms
 ## Rebuild
 
 ```
-git clone https://github.com/BenFrohman/frohmanian-metriplectic-ns.git && cd frohmanian-metriplectic-ns && git checkout 5a0a7dab0353e672ac695235ec029c455c438345 && lake exe cache get && lake build && python3 certificates/tools/sorry_scan.py && python3 certificates/tools/gen_audit.py /tmp/KernelCertificateAudit.lean /tmp/modules.txt && lake env lean /tmp/KernelCertificateAudit.lean > /tmp/axioms.raw.txt && python3 certificates/tools/check_audit.py /tmp/axioms.raw.txt | tail -n 1
+git clone https://github.com/BenFrohman/frohmanian-metriplectic-ns.git && cd frohmanian-metriplectic-ns && git checkout 3b40ae3d94d7ae4183fcf8b74d0a61dd40bf527c && lake exe cache get && lake build && python3 certificates/tools/sorry_scan.py && python3 certificates/tools/gen_audit.py /tmp/KernelCertificateAudit.lean /tmp/modules.txt && lake env lean /tmp/KernelCertificateAudit.lean > /tmp/axioms.raw.txt && python3 certificates/tools/check_audit.py /tmp/axioms.raw.txt | tail -n 1
 ```

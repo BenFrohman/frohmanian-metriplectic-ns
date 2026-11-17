@@ -1,0 +1,16 @@
+# Kernel certificate manifest
+# source commit: 3b40ae3d94d7ae4183fcf8b74d0a61dd40bf527c
+# lean-toolchain: leanprover/lean4:v4.30.0-rc1
+# Mathlib: 0c154d67103f74be3a0f2c509f72ccbf5be9f2a7 (lake-manifest.json; inputRev v4.30.0-rc1)
+# CI run: https://github.com/BenFrohman/frohmanian-metriplectic-ns/actions/runs/43954576160
+# rebuild: git clone https://github.com/BenFrohman/frohmanian-metriplectic-ns.git && cd frohmanian-metriplectic-ns && git checkout 3b40ae3d94d7ae4183fcf8b74d0a61dd40bf527c && lake exe cache get && lake build && python3 certificates/tools/sorry_scan.py && python3 certificates/tools/gen_audit.py /tmp/KernelCertificateAudit.lean /tmp/modules.txt && lake env lean /tmp/KernelCertificateAudit.lean > /tmp/axioms.raw.txt && python3 certificates/tools/check_audit.py /tmp/axioms.raw.txt | tail -n 1
+# verify: cd certificates && sha256sum -c MANIFEST.sha256
+0611c923cd83634dc89fa0bb3136184f1168f569412fb946bcb6b1c9ddae8aaf  CERTIFICATE.md
+bd174cff905367e68a342f10f5ca30591f05ca2acce7eed5d4c0bd9c0cbbd2b5  KernelCertificateAudit.lean.txt
+d8cc4c58ad967789251bbeaa3c4ca48212a4bf2d5c65a6df462bb47975ec036d  axioms.raw.txt
+de7bfe88d8ce0bcf5936c7ce1196fff6d9f0ba113adf5ceee4352bba53178115  axioms.txt
+e0591195fcfcca352c94fd7a86d87ebb5762469df2dec13e0b94ae3111354c16  build.log
+b0f54633a6ee5a72f14e3e591cb882d0a0bb223f1e0ee739b04c5e08a4a247a0  environment.txt
+1700bdf25aec3450737e026f3ee0448d96a5698c1010908590f558e8d5a2a613  leanchecker.txt
+1d30784446dcf89678fcf17ee498e98f318f2bf9f8f9b248dcf170ff3a69552e  modules.txt
+8865015ed5e11d4ed8bfda2345e914382a19548287c5b1824accdccb80058413  sorry-scan.txt
